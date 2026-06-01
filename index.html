@@ -1,0 +1,1568 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Фінансові активи</title>
+  <style>
+    :root {
+      --ink: #15231d;
+      --muted: #68736d;
+      --paper: #eef3ef;
+      --panel: #ffffff;
+      --line: #dce5df;
+      --green: #176b52;
+      --green-dark: #0f4f3e;
+      --copper: #bf6b39;
+      --blue: #22577a;
+      --soft: #f7faf7;
+      --shadow: 0 18px 45px rgba(19, 35, 27, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Aptos, "Segoe UI", sans-serif;
+      -webkit-text-size-adjust: 100%;
+      background:
+        linear-gradient(135deg, rgba(23, 107, 82, 0.12), transparent 32%),
+        linear-gradient(315deg, rgba(191, 107, 57, 0.12), transparent 42%),
+        var(--paper);
+    }
+
+    main {
+      width: min(980px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 22px 0 34px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 0.36fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .intro,
+    .panel,
+    .result-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow);
+    }
+
+    .intro {
+      position: relative;
+      overflow: hidden;
+      padding: 26px;
+      min-height: 210px;
+    }
+
+    .intro::after {
+      content: "";
+      position: absolute;
+      right: -55px;
+      bottom: -75px;
+      width: 190px;
+      height: 190px;
+      border: 16px solid rgba(23, 107, 82, 0.1);
+      transform: rotate(14deg);
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--copper);
+      font: 700 0.72rem/1.2 Aptos, "Segoe UI", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      position: relative;
+      margin: 0;
+      max-width: 640px;
+      font-size: 3.35rem;
+      line-height: 1;
+      letter-spacing: 0;
+      z-index: 1;
+    }
+
+    .intro p {
+      position: relative;
+      max-width: 650px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.55;
+      z-index: 1;
+    }
+
+    .market-tape {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--ink);
+      color: #f8f2e6;
+      box-shadow: var(--shadow);
+    }
+
+    .rate-chip {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 12px;
+      border: 1px solid rgba(246, 241, 232, 0.18);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.04);
+      font-family: Aptos, "Segoe UI", sans-serif;
+    }
+
+    .rate-chip span {
+      color: #b7c9bf;
+      font-size: 0.8rem;
+    }
+
+    .rate-chip strong {
+      font-size: 0.95rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 18px;
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 1.2rem;
+      line-height: 1.2;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font: 700 0.74rem/1.2 Aptos, "Segoe UI", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    input,
+    select,
+    button {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      font: 0.95rem/1.2 Aptos, "Segoe UI", sans-serif;
+    }
+
+    input,
+    select {
+      height: 42px;
+      padding: 0 12px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    button {
+      min-height: 42px;
+      padding: 12px 16px;
+      border-color: var(--green-dark);
+      color: #fffdf8;
+      background: var(--green);
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(23, 107, 82, 0.16);
+      transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    button:hover {
+      background: var(--green-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(23, 107, 82, 0.22);
+    }
+
+    .secondary-button {
+      border-color: var(--blue);
+      background: var(--blue);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .result-card {
+      margin-top: 14px;
+      padding: 16px;
+      background: var(--soft);
+    }
+
+    .result-value {
+      margin: 8px 0;
+      color: var(--green-dark);
+      font-size: 2.35rem;
+      line-height: 1;
+      overflow-wrap: anywhere;
+      font-weight: 700;
+    }
+
+    .explanation {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+
+    .history-card {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .history-header h3 {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .history-header span {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 8px;
+      max-height: 160px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .history-empty {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .history-item {
+      padding: 10px 11px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--soft);
+    }
+
+    .history-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 0.92rem;
+      line-height: 1.25;
+    }
+
+    .history-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.35;
+    }
+
+    .portfolio-list {
+      display: grid;
+      align-content: start;
+      gap: 9px;
+      max-height: 230px;
+      overflow-y: auto;
+      margin-top: 14px;
+      padding-right: 4px;
+    }
+
+    .asset-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--soft);
+    }
+
+    .asset-row > * {
+      min-width: 0;
+    }
+
+    .asset-row strong,
+    .asset-row span {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+
+    .asset-row span {
+      margin-top: 4px;
+      color: var(--muted);
+      font: 0.84rem/1.35 Aptos, "Segoe UI", sans-serif;
+    }
+
+    .asset-value {
+      color: var(--green-dark);
+      font: 700 0.95rem/1.2 Aptos, "Segoe UI", sans-serif;
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    .portfolio-total {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      font-family: Aptos, "Segoe UI", sans-serif;
+      font-weight: 700;
+    }
+
+    .portfolio-total span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .portfolio-total span:first-child {
+      flex: 0 0 96px;
+    }
+
+    .portfolio-total span:last-child {
+      flex: 1 1 auto;
+      max-height: 4.8rem;
+      overflow-y: auto;
+      padding-right: 4px;
+      text-align: right;
+    }
+
+    @supports (scrollbar-gutter: stable) {
+      .portfolio-total span:last-child {
+        scrollbar-gutter: stable;
+      }
+    }
+
+    .error {
+      color: #9d2d20;
+    }
+
+    .chat-widget {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 20;
+      display: grid;
+      justify-items: end;
+      gap: 12px;
+    }
+
+    .chat-window {
+      display: grid;
+      grid-template-rows: auto minmax(220px, 1fr) auto;
+      width: min(390px, calc(100vw - 28px));
+      max-height: min(560px, calc(100vh - 108px));
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 24px 70px rgba(19, 35, 27, 0.24);
+      transform-origin: bottom right;
+      animation: chat-pop 160ms ease-out;
+    }
+
+    .chat-window[hidden] {
+      display: none;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, #ffffff, #f2f7f3);
+    }
+
+    .chat-header .eyebrow {
+      margin-bottom: 5px;
+    }
+
+    .chat-header h2 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .chat-close {
+      width: 34px;
+      min-height: 34px;
+      padding: 0;
+      color: var(--ink);
+      border-color: var(--line);
+      background: #fff;
+      box-shadow: none;
+    }
+
+    .chat-toggle {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 94px;
+      min-height: 76px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      color: #303030;
+      background: transparent;
+      box-shadow: none;
+      overflow: visible;
+      filter: drop-shadow(0 16px 20px rgba(19, 35, 27, 0.18));
+    }
+
+    .chat-toggle:hover {
+      color: #303030;
+      background: transparent;
+      transform: translateY(-2px);
+      box-shadow: none;
+      filter: drop-shadow(0 18px 24px rgba(19, 35, 27, 0.24));
+    }
+
+    .chat-toggle::before,
+    .chat-toggle::after {
+      content: none;
+    }
+
+    .chat-icon {
+      display: block;
+      width: 94px;
+      height: 76px;
+      overflow: visible;
+    }
+
+    .chat-icon-bubble {
+      fill: #fff;
+      stroke: #303030;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .chat-icon-text {
+      fill: #303030;
+      font: 900 32px/1 Aptos, "Segoe UI", sans-serif;
+      letter-spacing: 0.02em;
+    }
+
+    .chat-log {
+      display: grid;
+      align-content: start;
+      gap: 10px;
+      overflow: auto;
+      padding: 14px;
+      background: #f8fbf8;
+    }
+
+    .chat-message {
+      width: min(88%, 300px);
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .chat-message strong {
+      display: block;
+      margin-bottom: 4px;
+      font: 700 0.68rem/1.2 Aptos, "Segoe UI", sans-serif;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .chat-message.user {
+      justify-self: end;
+      border-color: rgba(34, 87, 122, 0.28);
+      background: rgba(34, 87, 122, 0.08);
+    }
+
+    .chat-message.agent {
+      justify-self: start;
+      border-color: rgba(23, 107, 82, 0.28);
+      background: rgba(23, 107, 82, 0.08);
+    }
+
+    .chat-controls {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .chat-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 46px;
+      gap: 8px;
+    }
+
+    .chat-form input {
+      height: 42px;
+    }
+
+    .chat-form button {
+      min-height: 42px;
+      padding: 0;
+    }
+
+    .quick-prompts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .quick-prompts button {
+      width: auto;
+      min-height: 34px;
+      padding: 8px 10px;
+      color: var(--ink);
+      border-color: var(--line);
+      background: var(--soft);
+      box-shadow: none;
+      text-align: left;
+      font-size: 0.82rem;
+    }
+
+    .quick-prompts button:hover {
+      color: #fff;
+      background: var(--copper);
+      box-shadow: none;
+    }
+
+    @keyframes chat-pop {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        width: min(920px, calc(100% - 24px));
+        padding: 18px 0 34px;
+      }
+
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .intro {
+        min-height: 180px;
+      }
+
+      h1 {
+        font-size: 2.9rem;
+      }
+
+      .market-tape {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+
+      .result-value {
+        font-size: 2rem;
+      }
+
+      .history-list {
+        max-height: 150px;
+      }
+
+      .portfolio-list {
+        max-height: 255px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(100% - 20px, 560px);
+        padding: 14px 0 18px;
+      }
+
+      .grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .intro {
+        min-height: auto;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 2.35rem;
+      }
+
+      .intro p {
+        font-size: 0.94rem;
+      }
+
+      .market-tape {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        padding: 15px;
+      }
+
+      .result-value {
+        font-size: 1.85rem;
+      }
+
+      .history-list,
+      .portfolio-list {
+        max-height: 190px;
+      }
+
+      .asset-row {
+        grid-template-columns: 1fr;
+      }
+
+      .asset-value {
+        text-align: left;
+      }
+
+      .chat-message {
+        width: 100%;
+      }
+
+      .chat-widget {
+        position: static;
+        z-index: auto;
+        width: min(100% - 20px, 560px);
+        margin: 0 auto 22px;
+        justify-items: end;
+      }
+
+      .chat-window {
+        justify-self: stretch;
+        width: 100%;
+        max-height: min(560px, calc(100vh - 92px));
+      }
+    }
+
+    @media (max-width: 480px) {
+      main {
+        width: min(100% - 16px, 420px);
+        padding-top: 8px;
+        padding-bottom: 14px;
+      }
+
+      .hero,
+      .grid {
+        gap: 12px;
+      }
+
+      .intro,
+      .panel,
+      .result-card,
+      .history-card {
+        border-radius: 7px;
+      }
+
+      .intro {
+        padding: 16px;
+      }
+
+      .intro::after {
+        right: -90px;
+        bottom: -105px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .panel {
+        padding: 13px;
+      }
+
+      .form-grid {
+        gap: 10px;
+      }
+
+      input,
+      select {
+        height: 40px;
+      }
+
+      button {
+        min-height: 40px;
+      }
+
+      .result-card,
+      .history-card {
+        padding: 12px;
+      }
+
+      .result-value {
+        font-size: 1.55rem;
+      }
+
+      .history-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .history-list {
+        max-height: 150px;
+      }
+
+      .portfolio-list {
+        max-height: 180px;
+      }
+
+      .portfolio-total {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .portfolio-total span:first-child {
+        flex-basis: auto;
+      }
+
+      .portfolio-total span:last-child {
+        width: 100%;
+        text-align: left;
+      }
+
+      .chat-widget {
+        width: min(100% - 16px, 420px);
+        margin-bottom: 16px;
+      }
+
+      .chat-window {
+        grid-template-rows: auto minmax(180px, 1fr) auto;
+        width: 100%;
+        max-height: calc(100vh - 84px);
+      }
+
+      .chat-header,
+      .chat-controls,
+      .chat-log {
+        padding: 10px;
+      }
+
+      .chat-toggle {
+        width: 82px;
+        min-height: 66px;
+      }
+
+      .chat-icon {
+        width: 82px;
+        height: 66px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="intro">
+        <p class="eyebrow">Currency tools</p>
+        <h1 id="page-title">Фінансові активи та обмін валют</h1>
+        <p>Сторінка демонструє класи активів, поліморфний підрахунок портфеля і tool для конвертації за фіксованими курсами до гривні.</p>
+      </div>
+
+      <aside class="market-tape" aria-label="Поточні фіксовані курси">
+        <div class="rate-chip"><span>USD / UAH</span><strong>41.50</strong></div>
+        <div class="rate-chip"><span>EUR / UAH</span><strong>45.00</strong></div>
+        <div class="rate-chip"><span>GBP / UAH</span><strong>52.00</strong></div>
+        <div class="rate-chip"><span>PLN / UAH</span><strong>10.50</strong></div>
+        <div class="rate-chip"><span>BTC / UAH</span><strong>3 800 000</strong></div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>Конвертер валют</h2>
+        <form id="converter-form" class="form-grid">
+          <label class="full">
+            Сума
+            <input id="amount" type="number" min="0" step="0.01" value="100" maxlength="15" required>
+          </label>
+          <label>
+            З валюти
+            <select id="from-currency">
+              <option>USD</option>
+              <option>EUR</option>
+              <option>GBP</option>
+              <option>PLN</option>
+              <option>BTC</option>
+              <option>UAH</option>
+            </select>
+          </label>
+          <label>
+            У валюту
+            <select id="to-currency">
+              <option>EUR</option>
+              <option>USD</option>
+              <option>GBP</option>
+              <option>PLN</option>
+              <option>BTC</option>
+              <option>UAH</option>
+            </select>
+          </label>
+          <button class="full" type="submit">Конвертувати</button>
+        </form>
+
+        <div class="result-card" aria-live="polite">
+          <p class="eyebrow">Результат</p>
+          <div id="conversion-result" class="result-value">0.00 EUR</div>
+          <p id="conversion-explanation" class="explanation"></p>
+        </div>
+
+        <section class="history-card" aria-labelledby="history-title">
+          <div class="history-header">
+            <h3 id="history-title">Історія конвертацій</h3>
+            <span>останні 20</span>
+          </div>
+          <div id="conversion-history" class="history-list" aria-live="polite"></div>
+        </section>
+      </div>
+
+      <div class="panel">
+        <h2>Портфель активів</h2>
+        <form id="asset-form" class="form-grid">
+          <label>
+            Тип
+            <select id="asset-type">
+              <option value="currency">CurrencyAsset</option>
+              <option value="crypto">CryptoAsset</option>
+            </select>
+          </label>
+          <label>
+            Назва
+            <select id="asset-name">
+              <option>USD</option>
+              <option>EUR</option>
+              <option>GBP</option>
+              <option>PLN</option>
+              <option>BTC</option>
+              <option>UAH</option>
+            </select>
+          </label>
+          <label class="full">
+            Кількість
+            <input id="asset-amount" type="number" min="0" step="0.0001" value="1" maxlength="15" required>
+          </label>
+          <button class="full secondary-button" type="submit">Додати актив</button>
+        </form>
+
+        <div id="portfolio-list" class="portfolio-list" aria-live="polite"></div>
+        <div class="portfolio-total">
+          <span>Загальна вартість</span>
+          <span id="portfolio-total">0.00 UAH</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="chat-widget">
+    <section id="chat-window" class="chat-window" aria-labelledby="chat-title" hidden>
+      <header class="chat-header">
+        <div>
+          <p class="eyebrow">AI agent</p>
+          <h2 id="chat-title">Фінансовий консультант</h2>
+        </div>
+        <button id="chat-close" class="chat-close" type="button" aria-label="Закрити чат">X</button>
+      </header>
+
+      <div id="chat-log" class="chat-log" aria-live="polite"></div>
+
+      <div class="chat-controls">
+        <form id="chat-form" class="chat-form">
+          <label class="visually-hidden" for="chat-input">Повідомлення</label>
+          <input id="chat-input" type="text" autocomplete="off" placeholder="100 USD в EUR" maxlength="600" required>
+          <button type="submit" aria-label="Надіслати">OK</button>
+        </form>
+        <div class="quick-prompts" aria-label="Швидкі запити">
+          <button type="button" data-chat-message="Скільки буде 100 USD в EUR?">100 USD в EUR</button>
+          <button type="button" data-chat-message="Конвертуй 250 GBP у UAH">250 GBP у UAH</button>
+          <button type="button" data-chat-message="Поясни курс BTC до USD">BTC до USD</button>
+        </div>
+      </div>
+    </section>
+
+    <button id="chat-toggle" class="chat-toggle" type="button" aria-controls="chat-window" aria-expanded="false" aria-label="Відкрити чат">
+      <svg class="chat-icon" viewBox="0 0 140 110" aria-hidden="true" focusable="false">
+        <path class="chat-icon-bubble" d="M70 10C34 10 10 30 10 56c0 14 7 26 19 35l-8 20 31-12c7 2 15 3 24 3 36 0 64-20 64-46S111 10 70 10Z" />
+        <text class="chat-icon-text" x="76" y="67" text-anchor="middle">AI</text>
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    const RATES_TO_UAH = {
+      UAH: 1,
+      USD: 41.5,
+      EUR: 45,
+      GBP: 52,
+      PLN: 10.5,
+      BTC: 3800000,
+    };
+
+    const CURRENCY_ALIASES = {
+      USD: ["usd", "доларів", "долари", "долара", "долару", "долар", "дол", "баксів", "бакси", "бакс"],
+      EUR: ["eur", "євро", "евро", "євр", "евр"],
+      GBP: ["gbp", "фунтів", "фунти", "фунт"],
+      PLN: ["pln", "злотих", "злоті", "злотий", "злотого", "злот"],
+      BTC: ["btc", "bitcoin", "біткоїнів", "біткоїн", "биткоин"],
+      UAH: ["uah", "гривень", "гривні", "гривня", "грн"],
+    };
+
+    class Asset {
+      constructor(name, amount) {
+        if (new.target === Asset) {
+          throw new Error("Asset is abstract");
+        }
+
+        this.name = name;
+        this.amount = Number(amount);
+      }
+
+      getValueUah() {
+        throw new Error("getValueUah() must be implemented");
+      }
+    }
+
+    class CurrencyAsset extends Asset {
+      #rateToUah;
+
+      constructor(name, amount, rateToUah) {
+        super(name, amount);
+        this.#rateToUah = Number(rateToUah);
+      }
+
+      get rate() {
+        return this.#rateToUah;
+      }
+
+      getValueUah() {
+        return this.amount * this.#rateToUah;
+      }
+    }
+
+    class CryptoAsset extends Asset {
+      constructor(name, amount, baseRateToUah) {
+        super(name, amount);
+        this.baseRateToUah = Number(baseRateToUah);
+      }
+
+      getValueUah() {
+        const volatility = Math.floor(Math.random() * 1001) - 500;
+        return this.amount * (this.baseRateToUah + volatility);
+      }
+    }
+
+    class Portfolio {
+      #assets = [];
+
+      add(asset) {
+        if (!(asset instanceof Asset)) {
+          throw new TypeError("Portfolio accepts only Asset instances");
+        }
+
+        this.#assets.push(asset);
+      }
+
+      totalValueUah() {
+        return this.#assets.reduce((total, asset) => total + asset.getValueUah(), 0);
+      }
+
+      get assets() {
+        return [...this.#assets];
+      }
+    }
+
+    function normalizeCurrency(currency) {
+      return currency.trim().toUpperCase();
+    }
+
+    function getRateToUah(currency) {
+      const code = normalizeCurrency(currency);
+
+      if (!(code in RATES_TO_UAH)) {
+        throw new Error(`Непідтримувана валюта: ${currency}`);
+      }
+
+      return RATES_TO_UAH[code];
+    }
+
+    function convertCurrency(amount, fromCurrency, toCurrency) {
+      const from = normalizeCurrency(fromCurrency);
+      const to = normalizeCurrency(toCurrency);
+      const fromRate = getRateToUah(from);
+      const toRate = getRateToUah(to);
+      const sourceAsset = new CurrencyAsset(from, amount, fromRate);
+      const amountUah = sourceAsset.getValueUah();
+
+      return {
+        from,
+        to,
+        amount: Number(amount),
+        result: amountUah / toRate,
+        rate: fromRate / toRate,
+      };
+    }
+
+    const portfolio = new Portfolio();
+
+    const formatter = new Intl.NumberFormat("uk-UA", {
+      maximumFractionDigits: 4,
+    });
+
+    const smallNumberFormatter = new Intl.NumberFormat("uk-UA", {
+      maximumSignificantDigits: 6,
+    });
+
+    const moneyFormatter = new Intl.NumberFormat("uk-UA", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    const timeFormatter = new Intl.DateTimeFormat("uk-UA", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+    const converterForm = document.querySelector("#converter-form");
+    const amountInput = document.querySelector("#amount");
+    const fromCurrencySelect = document.querySelector("#from-currency");
+    const toCurrencySelect = document.querySelector("#to-currency");
+    const conversionResult = document.querySelector("#conversion-result");
+    const conversionExplanation = document.querySelector("#conversion-explanation");
+    const conversionHistoryList = document.querySelector("#conversion-history");
+    const assetForm = document.querySelector("#asset-form");
+    const assetTypeSelect = document.querySelector("#asset-type");
+    const assetNameSelect = document.querySelector("#asset-name");
+    const assetAmountInput = document.querySelector("#asset-amount");
+    const portfolioList = document.querySelector("#portfolio-list");
+    const portfolioTotal = document.querySelector("#portfolio-total");
+    const chatForm = document.querySelector("#chat-form");
+    const chatInput = document.querySelector("#chat-input");
+    const chatLog = document.querySelector("#chat-log");
+    const chatWindow = document.querySelector("#chat-window");
+    const chatToggle = document.querySelector("#chat-toggle");
+    const chatClose = document.querySelector("#chat-close");
+    const quickPromptButtons = document.querySelectorAll("[data-chat-message]");
+    const conversionHistory = [];
+
+    function formatAmount(value) {
+      const absoluteValue = Math.abs(value);
+
+      if (absoluteValue > 0 && absoluteValue < 0.0001) {
+        return smallNumberFormatter.format(value);
+      }
+
+      return formatter.format(value);
+    }
+
+    function formatRate(value) {
+      return formatAmount(value);
+    }
+
+    function limitNumberInputLength(input, maxLength = 15) {
+      input.addEventListener("input", () => {
+        if (input.value.length <= maxLength) {
+          return;
+        }
+
+        input.value = input.value.slice(0, maxLength);
+      });
+    }
+
+    function renderConversion(shouldSaveHistory = false) {
+      try {
+        const conversion = convertCurrency(
+          Number(amountInput.value),
+          fromCurrencySelect.value,
+          toCurrencySelect.value,
+        );
+
+        conversionResult.classList.remove("error");
+        conversionResult.textContent = `${formatAmount(conversion.result)} ${conversion.to}`;
+        conversionExplanation.textContent = `1 ${conversion.from} = ${formatRate(conversion.rate)} ${conversion.to}.`;
+
+        if (shouldSaveHistory) {
+          addConversionToHistory(conversion);
+        }
+      } catch (error) {
+        conversionResult.classList.add("error");
+        conversionResult.textContent = "Помилка";
+        conversionExplanation.textContent = error.message;
+      }
+    }
+
+    function addConversionToHistory(conversion) {
+      conversionHistory.unshift({
+        ...conversion,
+        createdAt: new Date(),
+      });
+
+      if (conversionHistory.length > 20) {
+        conversionHistory.pop();
+      }
+
+      renderConversionHistory();
+    }
+
+    function renderConversionHistory() {
+      conversionHistoryList.innerHTML = "";
+
+      if (conversionHistory.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "history-empty";
+        empty.textContent = "Після конвертації тут з'явиться історія.";
+        conversionHistoryList.append(empty);
+        return;
+      }
+
+      conversionHistory.forEach((item) => {
+        const row = document.createElement("article");
+        const summary = document.createElement("strong");
+        const meta = document.createElement("span");
+
+        row.className = "history-item";
+        summary.textContent = `${formatAmount(item.amount)} ${item.from} у ${formatAmount(item.result)} ${item.to}`;
+        meta.textContent = `Курс 1 ${item.from} = ${formatRate(item.rate)} ${item.to}, ${timeFormatter.format(item.createdAt)}`;
+
+        row.append(summary, meta);
+        conversionHistoryList.append(row);
+      });
+    }
+
+    function createAssetFromForm() {
+      const name = assetNameSelect.value;
+      const amount = Number(assetAmountInput.value);
+      const rate = getRateToUah(name);
+
+      if (assetTypeSelect.value === "crypto") {
+        return new CryptoAsset(name, amount, rate);
+      }
+
+      return new CurrencyAsset(name, amount, rate);
+    }
+
+    function renderPortfolio() {
+      portfolioList.innerHTML = "";
+
+      const pricedAssets = portfolio.assets.map((asset) => ({
+        asset,
+        valueUah: asset.getValueUah(),
+      }));
+
+      pricedAssets.forEach(({ asset, valueUah }) => {
+        const row = document.createElement("article");
+        row.className = "asset-row";
+
+        const meta = document.createElement("div");
+        const title = document.createElement("strong");
+        const detail = document.createElement("span");
+        const value = document.createElement("div");
+
+        title.textContent = asset.name;
+        detail.textContent = `${asset.constructor.name}: ${formatAmount(asset.amount)} одиниць`;
+        value.className = "asset-value";
+        value.textContent = `${moneyFormatter.format(valueUah)} UAH`;
+
+        meta.append(title, detail);
+        row.append(meta, value);
+        portfolioList.append(row);
+      });
+
+      const totalValueUah = pricedAssets.reduce((total, pricedAsset) => total + pricedAsset.valueUah, 0);
+      portfolioTotal.textContent = `${moneyFormatter.format(totalValueUah)} UAH`;
+    }
+
+    function setChatOpen(isOpen) {
+      chatWindow.hidden = !isOpen;
+      chatToggle.setAttribute("aria-expanded", String(isOpen));
+
+      if (isOpen) {
+        window.setTimeout(() => chatInput.focus(), 0);
+      }
+    }
+
+    function addChatMessage(role, text) {
+      const message = document.createElement("article");
+      const author = document.createElement("strong");
+      const body = document.createElement("div");
+
+      message.className = `chat-message ${role}`;
+      author.textContent = role === "agent" ? "Фінансовий агент" : "Ви";
+      body.textContent = text;
+
+      message.append(author, body);
+      chatLog.append(message);
+      chatLog.scrollTop = chatLog.scrollHeight;
+
+      return message;
+    }
+
+    function updateChatMessage(message, text) {
+      const body = message.querySelector("div");
+
+      if (body) {
+        body.textContent = text;
+      }
+
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    function escapeRegExp(value) {
+      return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function findCurrencyMatches(message) {
+      const normalized = message.toLowerCase();
+      const matches = [];
+
+      Object.entries(CURRENCY_ALIASES).forEach(([code, aliases]) => {
+        aliases.forEach((alias) => {
+          const expression = new RegExp(`(^|[^\\p{L}\\p{N}_])${escapeRegExp(alias)}(?=$|[^\\p{L}\\p{N}_])`, "gu");
+          let match = expression.exec(normalized);
+
+          while (match) {
+            matches.push({
+              code,
+              start: match.index + match[1].length,
+              end: match.index + match[1].length + alias.length,
+            });
+
+            match = expression.exec(normalized);
+          }
+        });
+      });
+
+      matches.sort((first, second) => first.start - second.start || second.end - second.start - (first.end - first.start));
+
+      return matches.reduce((currencies, match) => {
+        const overlaps = currencies.some((currency) => match.start < currency.end && match.end > currency.start);
+
+        if (!overlaps) {
+          currencies.push(match);
+        }
+
+        return currencies;
+      }, []);
+    }
+
+    function findCurrencies(message) {
+      return findCurrencyMatches(message).map((match) => match.code);
+    }
+
+    function isGreetingMessage(message) {
+      const normalized = message.toLowerCase().replace(/[!?.,\s]+/g, " ").trim();
+      return ["привіт", "вітаю", "добрий день", "доброго дня", "hello", "hi", "hey"].includes(normalized);
+    }
+
+    function isHistoryRequest(message) {
+      const normalized = message.toLowerCase();
+      const hasHistoryWord = /(нагадай|покажи|згадай|останні|минул|попередн|істор)/u.test(normalized);
+      const hasExchangeWord = /(обмін|конвертац|курс|операц)/u.test(normalized);
+
+      return hasHistoryWord && hasExchangeWord;
+    }
+
+    function getRequestedHistoryCount(message) {
+      const normalized = message.toLowerCase();
+      const numberMatch = normalized.match(/\d+/);
+
+      if (numberMatch) {
+        return Math.min(Math.max(Number(numberMatch[0]), 1), 20);
+      }
+
+      const wordNumbers = new Map([
+        ["один", 1],
+        ["одну", 1],
+        ["два", 2],
+        ["дві", 2],
+        ["три", 3],
+        ["чотири", 4],
+        ["п'ять", 5],
+        ["пять", 5],
+      ]);
+
+      for (const [word, value] of wordNumbers) {
+        if (normalized.includes(word)) {
+          return value;
+        }
+      }
+
+      return 5;
+    }
+
+    function formatConversionHistoryForChat(message) {
+      const count = getRequestedHistoryCount(message);
+      const items = conversionHistory.slice(0, count);
+
+      if (items.length === 0) {
+        return "Поки немає збережених обмінів. Зробіть конвертацію, і я зможу її нагадати.";
+      }
+
+      return items.map((item, index) => (
+        `${index + 1}. ${formatAmount(item.amount)} ${item.from} = ${formatAmount(item.result)} ${item.to}. Курс: 1 ${item.from} = ${formatRate(item.rate)} ${item.to}.`
+      )).join("\n");
+    }
+
+    function isFinanceMessage(message) {
+      const normalized = message.toLowerCase();
+      const financeKeywords = [
+        "актив", "акції", "банк", "валют", "грив", "грн", "депозит", "дохід",
+        "інвест", "інфляц", "конверт", "кредит", "крипт", "курс", "обмін",
+        "подат", "портф", "прибут", "ризик", "ставк", "фінанс",
+      ];
+
+      return findCurrencies(message).length > 0
+        || isHistoryRequest(message)
+        || financeKeywords.some((keyword) => normalized.includes(keyword));
+    }
+
+    function parseAgentRequest(message) {
+      const normalized = message.replace(",", ".");
+      const amountMatch = normalized.match(/\d+(?:\.\d+)?/);
+      const currencyMatches = findCurrencyMatches(message);
+
+      if (currencyMatches.length === 1 && currencyMatches[0].code !== "UAH") {
+        return {
+          amount: amountMatch ? Number(amountMatch[0]) : 1,
+          from: currencyMatches[0].code,
+          to: "UAH",
+        };
+      }
+
+      if (currencyMatches.length < 2) {
+        return null;
+      }
+
+      const amount = amountMatch ? Number(amountMatch[0]) : 1;
+
+      if (amountMatch) {
+        const amountStart = amountMatch.index;
+        const amountEnd = amountStart + amountMatch[0].length;
+        const fromAfterAmount = currencyMatches.find((match) => match.start >= amountEnd);
+
+        if (fromAfterAmount) {
+          const toAfterFrom = currencyMatches.find((match) => match.start > fromAfterAmount.end && match.code !== fromAfterAmount.code);
+          const toBeforeAmount = currencyMatches.find((match) => match.end <= amountStart && match.code !== fromAfterAmount.code);
+          const fallbackTo = currencyMatches.find((match) => match.code !== fromAfterAmount.code);
+          const toCurrency = toAfterFrom || toBeforeAmount || fallbackTo;
+
+          if (toCurrency) {
+            return {
+              amount,
+              from: fromAfterAmount.code,
+              to: toCurrency.code,
+            };
+          }
+        }
+      }
+
+      return {
+        amount,
+        from: currencyMatches[0].code,
+        to: currencyMatches[1].code,
+      };
+    }
+
+    function buildLocalConversionResponse(message) {
+      const request = parseAgentRequest(message);
+
+      if (!request) {
+        return null;
+      }
+
+      const conversion = convertCurrency(request.amount, request.from, request.to);
+
+      return {
+        conversion,
+        reply: `${formatAmount(conversion.amount)} ${conversion.from} = ${formatAmount(conversion.result)} ${conversion.to}. Курс: 1 ${conversion.from} = ${formatRate(conversion.rate)} ${conversion.to}.`,
+      };
+    }
+
+    function getHistoryPayload() {
+      return conversionHistory.slice(0, 10).map((item) => ({
+        amount: item.amount,
+        from: item.from,
+        result: item.result,
+        to: item.to,
+        rate: item.rate,
+        createdAt: item.createdAt.toISOString(),
+      }));
+    }
+
+    function getLocalAgentResponse(message) {
+      if (isGreetingMessage(message)) {
+        return "Привіт. Я фінансовий агент: можу конвертувати валюти, показати курс, нагадати минулі обміни й пояснити базові фінансові поняття.";
+      }
+
+      if (isHistoryRequest(message)) {
+        return formatConversionHistoryForChat(message);
+      }
+
+      const conversionResponse = buildLocalConversionResponse(message);
+
+      if (conversionResponse) {
+        return conversionResponse.reply;
+      }
+
+      if (!isFinanceMessage(message)) {
+        return "Я можу відповідати тільки на фінансові питання: валюти, обмін, курси, активи, портфель і фінансові розрахунки.";
+      }
+
+      const supported = Object.keys(RATES_TO_UAH).join(", ");
+      return `Я розумію фінансові запити й можу конвертувати ${supported}. Приклади: "скільки 100 євр в грн", "який курс злотого до гривні", "нагадай два минулих обміни".`;
+    }
+
+    async function getAgentResponse(message) {
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message,
+            history: getHistoryPayload(),
+          }),
+        });
+
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload.error || "AI server error");
+        }
+
+        return payload.reply || getLocalAgentResponse(message);
+      } catch (error) {
+        return getLocalAgentResponse(message);
+      }
+    }
+
+    converterForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      renderConversion(true);
+    });
+
+    assetForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      portfolio.add(createAssetFromForm());
+      renderPortfolio();
+    });
+
+    chatForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const message = chatInput.value.trim();
+
+      if (!message) {
+        return;
+      }
+
+      addChatMessage("user", message);
+      chatInput.value = "";
+      const pendingMessage = addChatMessage("agent", "Обробляю фінансовий запит...");
+      const reply = await getAgentResponse(message);
+      updateChatMessage(pendingMessage, reply);
+
+      const conversionResponse = buildLocalConversionResponse(message);
+
+      if (conversionResponse) {
+        addConversionToHistory(conversionResponse.conversion);
+      }
+    });
+
+    chatToggle.addEventListener("click", () => {
+      setChatOpen(chatWindow.hidden);
+    });
+
+    chatClose.addEventListener("click", () => {
+      setChatOpen(false);
+    });
+
+    quickPromptButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        chatInput.value = button.dataset.chatMessage;
+        chatForm.requestSubmit();
+      });
+    });
+
+    limitNumberInputLength(amountInput);
+    limitNumberInputLength(assetAmountInput);
+
+    portfolio.add(new CurrencyAsset("USD", 100, RATES_TO_UAH.USD));
+    portfolio.add(new CurrencyAsset("EUR", 50, RATES_TO_UAH.EUR));
+    portfolio.add(new CryptoAsset("BTC", 0.02, RATES_TO_UAH.BTC));
+
+    renderConversion();
+    renderConversionHistory();
+    renderPortfolio();
+  </script>
+</body>
+</html>
